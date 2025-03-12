@@ -29,7 +29,7 @@ def add_new_user_to_dividends(username):
     if username in dividends_df["username"].values:
         return
 
-    new_user = pd.DataFrame([[username, 0, 0, 0, 0, 0, 0, 10000000*yf.Ticker('GBPUSD=X').info['open']]], columns=DIVIDENDS_COLUMNS)
+    new_user = pd.DataFrame([[username, 0, 0, 0, 0, 0, 0, 10000000]], columns=DIVIDENDS_COLUMNS)
     dividends_df = pd.concat([dividends_df, new_user], ignore_index=True)
     save_dividends_data(dividends_df)
 
@@ -136,7 +136,7 @@ elif page == "Portfolio Finder":
     if username not in dividends_df["username"].values:
         st.warning("⚠️ No portfolio found. Creating a new portfolio for you...")
         
-        new_portfolio = pd.DataFrame([[username, 0, 0, 0, 0, 0, 0, 10000000*yf.Ticker('GBPUSD=X').info['open']]], columns=DIVIDENDS_COLUMNS)
+        new_portfolio = pd.DataFrame([[username, 0, 0, 0, 0, 0, 0, 10000000]], columns=DIVIDENDS_COLUMNS)
         dividends_df = pd.concat([dividends_df, new_portfolio], ignore_index=True)
         save_dividends_data(dividends_df)
 
@@ -239,8 +239,8 @@ elif page == "Portfolio Finder":
         print(f"Confidence Interval: ${lower_bound:,.2f} - ${upper_bound:,.2f}")
 
         st.subheader(f"📈 Projected Portfolio Value in {investment_years} Years on {(datetime.datetime.now()+datetime.timedelta(weeks = 52*investment_years)).date().strftime('%d-%m-%Y')}")
-        st.write(f"**Estimated Portfolio Value:** ${future_value:,.2f}")
-        st.write(f"**95% Confidence Interval:** ${lower_bound:,.2f} - ${upper_bound:,.2f}")
+        st.write(f"**Estimated Portfolio Value:** £{future_value:,.2f}")
+        st.write(f"**95% Confidence Interval:** £{lower_bound:,.2f} - £{upper_bound:,.2f}")
         st.write(f"**Average Annual Return Estimate:** {annual_return:.2f}% per year")
         st.write(f"Come back in 1 year for rebalancing on {(datetime.datetime.now()+datetime.timedelta(weeks = 52)).date().strftime('%d-%m-%Y')}")
 
@@ -287,7 +287,7 @@ elif page == "Portfolio Finder":
             "Ticker": labels,
             "Weight (%)": sizes,
             "Shares Purchased": [shares_to_buy[asset] for asset in labels],
-            "Total Invested ($)": [shares_to_buy[asset] * stock_prices[asset] if stock_prices[asset] else 0 for asset in labels]
+            "Total Invested (£)": [shares_to_buy[asset] * stock_prices[asset] if stock_prices[asset] else 0 for asset in labels]
         })
         st.write(purchase_df)
 
