@@ -166,26 +166,3 @@ def monte_carlo(owned_shares, combination, simulation_prices, exchange_rate_pred
         "combination": combination,
         "target_shares": all_target_shares
     }
-
-
-
-
-tickers = {
-    'Consumer Staples': 'VDC',
-    'Healthcare': 'VHT',
-    'Tech': 'VGT',
-    'Bonds': 'TLT',
-    'Yen to USD': 'JPY=X',
-    'Gold': 'GLD'
-}
-exchange_rate = {'GBP to USD': 'GBPUSD=X'}
-shares_owned = {
-    'Consumer Staples': 0,
-    'Healthcare': 0,
-    'Tech': 0,
-    'Bonds': 0,
-    'Yen to USD': 0,
-    'Gold': 0,
-    "spare_cash":10000000*yf.Ticker('GBPUSD=X').info['open']
-}
-
