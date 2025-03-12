@@ -61,7 +61,7 @@ def generate_combinations(share_divisible, tickers):
 def get_dividend_yield(ticker):
     stock = yf.Ticker(ticker)
     try:
-        return stock.info.get('dividendYield', 0) 
+        return stock.info.get('dividendYield', 0) / 100
     except:
         return 0  
 
@@ -102,7 +102,7 @@ def monte_carlo(owned_shares, combination, simulation_prices, exchange_rate_pred
         portfolio_values.append(portfolio_value)
         dates_values.append(simulation_prices.index[today])
         
-        daily_dividends = sum((dividend_yields[key] * tickers_prices[today, idx] / 252) * shares[key] for idx, key in enumerate(tickers.keys()) if key != 'spare_cash' and dividend_yields[key] > 0)
+        daily_dividends = sum(((dividend_yields[key]/12) * tickers_prices[today, idx]) * shares[key] for idx, key in enumerate(tickers.keys()) if key != 'spare_cash' and dividend_yields[key] > 0)
         
         total_dividends = daily_dividends
         dividend_tax_payable_US = total_dividends * (0.15 if W_8Ben_status == 'Yes' else 0.3)
@@ -166,3 +166,26 @@ def monte_carlo(owned_shares, combination, simulation_prices, exchange_rate_pred
         "combination": combination,
         "target_shares": all_target_shares
     }
+
+
+
+
+tickers = {
+    'Consumer Staples': 'VDC',
+    'Healthcare': 'VHT',
+    'Tech': 'VGT',
+    'Bonds': 'TLT',
+    'Yen to USD': 'JPY=X',
+    'Gold': 'GLD'
+}
+exchange_rate = {'GBP to USD': 'GBPUSD=X'}
+shares_owned = {
+    'Consumer Staples': 0,
+    'Healthcare': 0,
+    'Tech': 0,
+    'Bonds': 0,
+    'Yen to USD': 0,
+    'Gold': 0,
+    "spare_cash":10000000*yf.Ticker('GBPUSD=X').info['open']
+}
+
