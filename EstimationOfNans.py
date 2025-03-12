@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar  9 19:31:21 2025
-
-@author: emreg
-"""
-
 import yfinance as yf
 import numpy as np
 import datetime
