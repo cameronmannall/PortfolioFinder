@@ -17,14 +17,20 @@ def portfolio_comparison_and_creation(tickers, exchange_rate, shares_owned, end_
 
     simulation_prices, _ = predict_stock_prices_gui(tickers, investment_end_date=end_date, drop=0.4, n_iter=10)
     exchange_rate_predictions, _ = predict_stock_prices_gui(exchange_rate, investment_end_date=end_date, drop=0.4, n_iter=10)
-
-
+    
+    
+    simulation_prices_gbp = pd.DataFrame(columns=simulation_prices.columns, index=simulation_prices.index)
+    exchange_rate_predictions = exchange_rate_predictions[exchange_rate_predictions.columns[-1]]
+    for column in simulation_prices.columns:
+          simulation_prices_gbp[column] = simulation_prices[column] / exchange_rate_predictions
+           
+    #simulation_prices_gbp["status"] = simulation_prices["status"]
     print("Generating portfolio combinations...")
     combinations = generate_combinations(share_divisible, tickers)
 
     # Set review dates
     review_positions = np.linspace(0, len(simulation_prices) - 1, number_of_reviews, dtype=int)
-    simulation_prices["status"] = ["review" if i in review_positions else "no review" for i in range(len(simulation_prices))]
+    simulation_prices_gbp["status"] = ["review" if i in review_positions else "no review" for i in range(len(simulation_prices))]
 
 
     print("Running Monte Carlo simulations on portfolio combinations...")
@@ -33,7 +39,7 @@ def portfolio_comparison_and_creation(tickers, exchange_rate, shares_owned, end_
 
     for i, combination in enumerate(combinations):
         start_time = time.time()
-        result = monte_carlo(shares_owned, combination, simulation_prices, exchange_rate_predictions, tickers, dividend_yields, number_of_reviews, W_8Ben_status, income)
+        result = monte_carlo(shares_owned, combination, simulation_prices_gbp, tickers, dividend_yields, number_of_reviews, W_8Ben_status, income)
 
         print(f"Combination {i+1}/{len(combinations)} result:", result)
         return_averages.append(result)
@@ -74,7 +80,7 @@ def buying_selling(shares_owned, shares_to_buy):
     
     return buying, selling, dont_change
 
-def monte_carlo(owned_shares, combination, simulation_prices, exchange_rate_predictions, tickers, dividend_yields, number_of_reviews, W_8Ben_status, income):
+def monte_carlo(owned_shares, combination, simulation_prices, tickers, dividend_yields, number_of_reviews, W_8Ben_status, income):
 
     days = 0
     shares = owned_shares.copy()
@@ -166,3 +172,4 @@ def monte_carlo(owned_shares, combination, simulation_prices, exchange_rate_pred
         "combination": combination,
         "target_shares": all_target_shares
     }
+
