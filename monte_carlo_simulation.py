@@ -156,7 +156,12 @@ def monte_carlo(owned_shares, combination, simulation_prices, tickers, dividend_
 
     initial_value = sum(owned_shares[key] * tickers_prices[0, idx] for idx, key in enumerate(tickers.keys()) if key != 'spare_cash') + owned_shares.get('spare_cash', 0)
     
-    capital_gains_tax = 0.2 * profits
+    
+    
+    if income <=50270:
+        capital_gains_tax = max(0.18 * (profits-3000),0)
+    else:
+        capital_gains_tax = max(0.24 * (profits-3000),0)
     returns = (100 * (portfolio_value - initial_value - total_transaction_costs - capital_gains_tax) / initial_value)
     
     volatility_returns = np.mean(np.abs(np.diff(np.array(portfolio_values))))
