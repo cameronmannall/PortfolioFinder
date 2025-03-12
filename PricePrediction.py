@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 10 02:30:36 2025
-
-@author: emreg
-"""
-
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
