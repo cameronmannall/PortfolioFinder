@@ -154,7 +154,7 @@ elif page == "Portfolio Finder":
     income = income_options[income_category]
 
     investment_years = st.slider("Investment Duration (years)", 1, 10, 5)
-    W_8Ben_status = st.radio("Do you have a W-8BEN form?", ["Yes", "No"])
+    W_8Ben_status = st.radio("Do you have a W-8BEN form in the last 3 years?", ["Yes", "No"])
 
     st.subheader("📊 Your Current Portfolio")
     st.write(user_dividends)
@@ -245,12 +245,12 @@ elif page == "Portfolio Finder":
         st.write(f"Come back in 1 year for rebalancing on {(datetime.datetime.now()+datetime.timedelta(weeks = 52)).date().strftime('%d-%m-%Y')}")
 
         allocations = {asset: optimized_weights[i] * initial_cash for i, asset in enumerate(tickers.keys())}
-
+        current_exchange_rate = yf.Ticker("GBPUSD=X").history(period="1d")["Close"][-1]
         stock_prices = {}
         for asset, ticker in tickers.items():
             try:
                 stock_data = yf.Ticker(ticker).history(period="1d")["Close"]
-                stock_prices[asset] = stock_data.values[-1] if not stock_data.empty else None
+                stock_prices[asset] = stock_data.values[-1]/current_exchange_rate if not stock_data.empty else None
             except Exception as e:
                 print(f"⚠️ Error fetching price for {ticker}: {e}")
                 stock_prices[asset] = None
@@ -261,7 +261,7 @@ elif page == "Portfolio Finder":
             dividends_df.loc[dividends_df["username"] == username, asset] = shares_to_buy[asset]
 
         remaining_cash = initial_cash - sum(shares_to_buy[asset] * stock_prices[asset] if stock_prices[asset] else 0 for asset in tickers.keys())
-        dividends_df.loc[dividends_df["username"] == username, "spare_cash"] = remaining_cash
+        dividends_df.loc[dividends_df["username"] == username, "spare_cash"] = round(remaining_cash, 2)
 
         save_dividends_data(dividends_df)
         st.subheader("📊 Updated Portfolio After Optimisation")
@@ -287,7 +287,8 @@ elif page == "Portfolio Finder":
             "Ticker": labels,
             "Weight (%)": sizes,
             "Shares Purchased": [shares_to_buy[asset] for asset in labels],
-            "Total Invested (£)": [shares_to_buy[asset] * stock_prices[asset] if stock_prices[asset] else 0 for asset in labels]
+            "Total Invested (£)": [round(shares_to_buy[asset] * stock_prices[asset] if stock_prices[asset] else 0, 2) for asset in labels]
+
         })
         st.write(purchase_df)
 
